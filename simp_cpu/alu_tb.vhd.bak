@@ -5,12 +5,15 @@ USE IEEE.numeric_std.all;
 use work.sys_definition.all;
 
 entity alu_tb is
-    
+     port(
+        ALUs : out std_logic_vector(1 downto 0)
+     );
+
 end alu_tb;
 
 
 architecture alu_tb_behave of alu_tb is
-        signal ALUs :  std_logic_vector(1 downto 0);
+        --signal ALUs :  std_logic_vector(1 downto 0);
         signal ALUz :  std_logic;
         signal ALUr :  std_logic_vector(DATA_WIDTH - 1 downto 0);
 

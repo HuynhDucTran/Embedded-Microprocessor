@@ -24,16 +24,21 @@ use IEEE.std_logic_unsigned.all;
 use work.Sys_Definition.all;
 
 ENTITY mux4to1 IS
-   GENERIC ( 
-		    DATA_WIDTH : integer := 8);
-   PORT (A, B, C, D: IN  	std_logic_vector (DATA_WIDTH-1 downto 0);
+   
+   PORT (A, B, C, D: IN  	std_logic_vector (DATA_WIDTH - 1 downto 0);
         SEL : IN 	 std_logic_vector (1 downto 0);
-        Z: OUT 	std_logic_vector (DATA_WIDTH-1 downto 0)
+        Z: OUT 	std_logic_vector (DATA_WIDTH - 1 downto 0)
                );
 END mux4to1;
-ARCHITECTURE bev OF mux4to1 IS
+ARCHITECTURE mux4to1_behave OF mux4to1 IS
 BEGIN
     -- write your code here
+    with SEL select 
+        Z <= A when "00",
+             B when "01",
+             C when "10",
+             D when others;
 
-END bev;
+
+END mux4to1_behave;
 

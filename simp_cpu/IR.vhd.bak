@@ -1,0 +1,40 @@
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use work.sys_definition.all;
+USE IEEE.numeric_std.all;
+use ieee.std_logic_unsigned.all;
+
+
+-- program counter with asynchronous PCclr
+entity IR is
+     port( 
+          IRclr : in std_logic;
+          IRld : in std_logic;
+          clk : in std_logic;
+          IR_in : in std_logic_vector(DATA_WIDTH - 1 downto 0);
+          IR_out : inout std_logic_vector(DATA_WIDTH - 1 downto 0)
+     ); 
+end IR;
+
+
+architecture IR_behave of IR is
+
+     begin -- begin of architecture
+          mypr8: process(clk, IRclr)
+          begin -- begin of process
+               if (IRclr = '1') then 
+                    IR_out <= x"0000";
+               elsif (clk'event and clk = '1') then
+                    if (PCld = '1') then
+                         IR_out <= IR_in;
+                    else IR_out <= IR_out;
+                    end if;
+               end if;
+
+
+     end process;
+          
+
+
+end IR_behave;

@@ -1,0 +1,79 @@
+-- Nguyen Kiem Hung
+-- controller
+
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.std_logic_arith.all;
+use work.sys_definition.all;
+
+entity controller is             	
+  Generic (
+    DATA_WIDTH : integer   := 16;     -- Data Width
+    ADDR_WIDTH : integer   := 16      -- Address width
+    );
+   port (-- you will need to add more ports here as design grows
+         nReset   : in STD_LOGIC; -- low active reset signal
+    	    start : in STD_LOGIC;    -- high active Start: enable cpu
+         clk   : in STD_LOGIC;    -- Clock
+         Addr_out : out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); -- refer to memory.
+	       IR_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0); -- input to decode
+	       ALU_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0);
+         imm   : out std_logic_vector(3 downto 0); -- check???
+         -- status signals from ALU
+     	   ALUz  : in std_logic; -- alu flags
+     	    -- add ports as required here
+     	   -- control signals
+     	   RFs    : out std_logic_vector(1 downto 0); -- register file selected.
+     	   Mre, Mwe : out std_logic; -- memory read enable, memory write enable, both RF and Memory=> M 
+          
+     	   
+     	    -- add ports as required here
+         -- Ms : out std_logic_vector(1 downto 0);
+         IRLd : out std_logic;
+
+         RFwa : out std_logic_vector(3 downto 0);-- RFwe is Mwe
+         
+         OPR1a : out std_logic_vector(3 downto 0);
+         OPR1e : out std_logic;
+         OPR2a : out std_logic_vector(3 downto 0);
+         OPR2e : out std_logic;
+
+        -- pc control
+        PCClr : out std_logic;
+        PCinc : out std_logic;
+        PCLd : out std_logic
+        
+        
+          
+        );                              
+ 
+end controller;
+
+architecture fsm of controller is
+-- types and signals are declared here  
+		
+
+-- constants declared for ease of reading code
+
+  
+
+  
+				 
+begin
+	-- state transition
+  FSM_trans:process (nreset, start, clk)
+   
+  begin
+    
+  end process;	
+  -- write codes to generate control signals 			
+end fsm;
+
+
+
+
+
+
+
+
+

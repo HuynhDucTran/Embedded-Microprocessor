@@ -6,10 +6,10 @@ use work.sys_definition.all;
 
 entity alu is
 
-        generic (
-        DATA_WIDTH        :     integer   := 16;     -- Word Width
-        ADDR_WIDTH        :     integer   := 16      -- Address width
-        );
+        --generic (
+       -- DATA_WIDTH        :     integer   := 16;     -- Word Width
+       -- ADDR_WIDTH        :     integer   := 16      -- Address width
+       -- );
 
         port(
                 ALUs : in std_logic_vector(1 downto 0);
