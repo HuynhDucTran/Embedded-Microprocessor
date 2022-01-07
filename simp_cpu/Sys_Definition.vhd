@@ -31,58 +31,60 @@ package Sys_Definition is
 -- Type Definition
    -- type ADDR_ARRAY_TYPE is array (VC_NUM-1 DOWNTO 0) of std_logic_vector (ADDR_WIDTH-1 downto 0);
    type register_file_array is array (integer range <>) of std_logic_vector(DATA_WIDTH - 1 downto 0);
-
+   type state_type is (fetch, decode);
+   signal state: state_type;
 -- **************************************************************
 --COMPONENTs
 -- CPU
 COMPONENT cpu is
   
-  port ( nReset   : in STD_LOGIC; -- low active reset signal
+  port ( nReset   : in STD_LOGIC := '1'; -- low active reset signal
    --  start : in STD_LOGIC;    -- high active Start: enable cpu
-     clk   : in STD_LOGIC;    -- Clock
+     clk   : in STD_LOGIC := '0';    -- Clock
    -- Addr_out : out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); -- refer to memory.
      IR_in : inout STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0) := x"0000"; -- input to decode
        IR_inD : inout STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0) := x"0000"; -- input to decode
    -- ALU_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0);
    -- imm   : out std_logic_vector(3 downto 0); -- check???
      -- status signals from ALU
-     ALUz  : inout std_logic; -- alu flags
+     ALUz  : inout std_logic := '0'; -- alu flags
        -- add ports as required here
      -- control signals
-     RFs    : inout std_logic_vector(1 downto 0); -- register file selected.
-     Mre, Mwe : inout std_logic; -- memory read enable, memory write enable, both RF and Memory=> M 
-     ALUs : inout std_logic_vector(1 downto 0); --
+     RFs    : inout std_logic_vector(1 downto 0) := "00"; -- register file selected.
+     Mre: inout std_logic := '0'; -- memory read enable, memory write enable, both RF and Memory=> M 
+     Mwe : inout std_logic := '0'; -- memory read enable, memory write enable, both RF and Memory=> M 
+     ALUs : inout std_logic_vector(1 downto 0) := "00"; --
      
        -- add ports as required here
-     Ms : inout std_logic_vector(1 downto 0);
-     IRLd : inout std_logic;
+     Ms : inout std_logic_vector(1 downto 0) := "00";
+     IRLd : inout std_logic := '0';
 
-     RFwa : inout std_logic_vector(3 downto 0);-- RFwe is Mwe
-     RFwe : inout std_logic;
-     OPR1a : inout std_logic_vector(3 downto 0);
-     OPR1e : inout std_logic;
-     OPR2a : inout std_logic_vector(3 downto 0);
-     OPR2e : inout std_logic;
+     RFwa : inout std_logic_vector(3 downto 0) := x"0";-- RFwe is Mwe
+     RFwe : inout std_logic := '0';
+     OPR1a : inout std_logic_vector(3 downto 0) := x"0";
+     OPR1e : inout std_logic := '0';
+     OPR2a : inout std_logic_vector(3 downto 0) := x"0";
+     OPR2e : inout std_logic := '0';
      IRclr : inout std_logic := '0';
    -- pc control
-   PCClr : inout std_logic;
-   PCinc : inout std_logic;
-   PCLd : inout std_logic;
+   PCClr : inout std_logic := '0';
+   PCinc : inout std_logic := '0';
+   PCLd : inout std_logic := '0';
  -- mux4to1
-   PCout : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-   addr_out : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-   alu_addr : inout std_logic_vector(DATA_WIDTH - 1 downto 0); --
-   IR_out1 : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-   IR_for_D_pc : inout std_logic_vector(DATA_WIDTH - 1 downto 0); -- for 
+   PCout : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+   addr_out : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+   alu_addr : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+   IR_out1 : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+   IR_for_D_pc : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
 
-   register_temp : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
+   register_temp : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
     --datapath
-    RFin : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-    OPr1 : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-    OPr2 : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-    IR_out_for_RF_1: inout  	std_logic_vector (DATA_WIDTH - 1 downto 0) := x"000B"; -- port B
+    RFin : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+    OPr1 : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+    OPr2 : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+    IR_out_for_RF_1: inout  	std_logic_vector (DATA_WIDTH - 1 downto 0) := x"0000"; -- port B
     --Data_out: inout  	std_logic_vector (DATA_WIDTH - 1 downto 0) := x"000C"; -- port C IR_inD
-    ALUr : inout std_logic_vector(DATA_WIDTH - 1 downto 0);-- port A
+    ALUr : inout std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";-- port A
     gpio_register_array : inout register_file_array (15 downto 0) := (others => (others => '0'))
        );
 end COMPONENT;
@@ -90,39 +92,42 @@ end COMPONENT;
 COMPONENT controller is             	
   
    port (-- you will need to add more ports here as design grows
-         nReset   : in STD_LOGIC; -- low active reset signal
+         nReset   : in STD_LOGIC := '1'; -- low active reset signal
     	  --  start : in STD_LOGIC;    -- high active Start: enable cpu
-         clk   : in STD_LOGIC;    -- Clock
+         clk   : in STD_LOGIC := '0';    -- Clock
         -- Addr_out : out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); -- refer to memory.
 	       IR_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0) := x"0000"; -- input to decode
 	      -- ALU_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0);
         -- imm   : out std_logic_vector(3 downto 0); -- check???
          -- status signals from ALU
-     	   ALUz  : in std_logic; -- alu flags
+     	   ALUz  : in std_logic := '0'; -- alu flags
      	    -- add ports as required here
      	   -- control signals
-     	   RFs    : out std_logic_vector(1 downto 0); -- register file selected.
-     	   Mre, Mwe : out std_logic; -- memory read enable, memory write enable, both RF and Memory=> M 
-          ALUs : out std_logic_vector(1 downto 0); --
+     	   RFs    : out std_logic_vector(1 downto 0) := "00"; -- register file selected.
+     	   Mre: out std_logic := '0'; -- memory read enable, memory write enable, both RF and Memory=> M 
+     	   Mwe : out std_logic := '0'; -- memory read enable, memory write enable, both RF and Memory=> M 
+
+          ALUs : out std_logic_vector(1 downto 0) := "00"; --
      	   
      	    -- add ports as required here
-         Ms : out std_logic_vector(1 downto 0);
-         IRLd : out std_logic;
+         Ms : out std_logic_vector(1 downto 0) := "00";
+         IRLd : out std_logic := '0';
 
-         RFwa : out std_logic_vector(3 downto 0);-- RFwe is Mwe
-         RFwe : out std_logic;
-         OPR1a : out std_logic_vector(3 downto 0);
-         OPR1e : out std_logic;
-         OPR2a : out std_logic_vector(3 downto 0);
-         OPR2e : out std_logic;
+         RFwa : out std_logic_vector(3 downto 0) := x"0";-- RFwe is Mwe
+         RFwe : out std_logic := '0';
+         OPR1a : out std_logic_vector(3 downto 0) := x"0";
+         OPR1e : out std_logic := '0';
+         OPR2a : out std_logic_vector(3 downto 0) := x"0";
+         OPR2e : out std_logic := '0';
 
         -- pc control
-        PCClr : out std_logic;
-        PCinc : out std_logic;
-        PCLd : out std_logic;
+        PCClr : out std_logic := '0';
+        PCinc : out std_logic := '0';
+        PCLd : out std_logic := '0';
 
         -- opcode : in std_logic_vector(15 downto 12); -- bits: 15 14 13 12 ==> opcode
-         check_over_instruction : out std_logic
+         check_over_instruction : out std_logic := '0';
+         fetch_flag: buffer std_logic := '0'
         
         
           
@@ -197,14 +202,19 @@ component dpmem
   end component;
 
   ----------------------------------------------------------------
-  -- component for test 
-  component test is
-    port (
-        out1: in std_logic_vector(3 downto 0);
-        integer_test: out integer
-    );-- Memory
+  -- PC component
+  component pc is
+    port( 
+         clk : in std_logic := '0';
+         PCclr : in std_logic := '0';
+         PCinc : in std_logic := '0';
+         PCLd : in std_logic := '0';
 
+         PC_in : in std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+         PC_out : buffer std_logic_vector(DATA_WIDTH - 1 downto 0)  := x"0000"
+    ); 
 end component;
+
 
   ----------------------------------------------------------------
 
@@ -275,17 +285,20 @@ end Component;
   Component register_file is
 
    port(
-           clk: in std_logic;       
-           RFwe: in std_logic;
-           RFwa: in std_logic_vector(3 downto 0);
-           OPr1a: in std_logic_vector(3 downto 0);
-           OPr2a: in std_logic_vector(3 downto 0);
-           OPr1e, OPr2e: in std_logic;
-           RFin : in std_logic_vector(DATA_WIDTH - 1 downto 0);
+    clk: in std_logic := '0';       
+    RFwe: in std_logic := '0';
+    RFwa: in std_logic_vector(3 downto 0) := x"0";
+    OPr1a: in std_logic_vector(3 downto 0) := x"0";
+    OPr2a: in std_logic_vector(3 downto 0) := x"0";
+    OPr1e: in std_logic := '0';
+    OPr2e: in std_logic := '0';
 
-           OPr1 : out std_logic_vector(DATA_WIDTH - 1 downto 0);
-           OPr2 : out std_logic_vector(DATA_WIDTH - 1 downto 0);
-           gpio_register_array : inout register_file_array (15 downto 0) := (others => (others => '0'))
+    RFin : in std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+
+    OPr1 : out std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+    OPr2 : out std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+    gpio_register_array : buffer register_file_array (15 downto 0) := (x"0001", x"0002", x"0003", x"0004", x"0004",x"0004", x"0004", x"0004", x"0004", x"0004", x"0004", x"0004", x"0004", x"0004", x"0004", x"0004")
+
 
    );
 
@@ -294,17 +307,21 @@ end Component;
 --------------------------------
 
 --------------------------------
--- PC component
-Component pc is
-  port( 
-       clk : in std_logic;
-       PCclr : in std_logic;
-       PCinc : in std_logic;
-       PCLd : in std_logic;
+-- test component
+Component test is
+  port (
+      clk : in std_logic := '0';
+        PCclr : in std_logic;
+        PCinc : out std_logic := '0';
+        PCLd : in std_logic := '0';
 
-       PC_in : in std_logic_vector(DATA_WIDTH - 1 downto 0);
-       PC_out : inout std_logic_vector(DATA_WIDTH - 1 downto 0)
+        PC_in : in std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+      
+        sample: out std_logic := '0'
   );
+
+
+
 end Component;
 
 
@@ -315,63 +332,18 @@ end Component;
 -- IR component
 Component IR is
   port( 
-       IRclr : in std_logic;
-       IRld : in std_logic;
-       clk : in std_logic;
-       IR_in : in std_logic_vector(DATA_WIDTH - 1 downto 0);
-       IR_out : inout std_logic_vector(DATA_WIDTH - 1 downto 0)
+        IRclr : in std_logic := '0';
+        IRld : in std_logic := '0';
+        clk : in std_logic := '0';
+        IR_in : in std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+        IR_out : buffer std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000"
   ); 
 end Component;
 --------------------------------
 
 --------------------------------
 --control unit component
-Component control_unit is
-  port( 
-       nReset   : in STD_LOGIC; -- low active reset signal
-     --  start : in STD_LOGIC;    -- high active Start: enable cpu
-      clk   : in STD_LOGIC;    -- Clock
-     -- Addr_out : out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); -- refer to memory.
-      IR_in : inout STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0) := x"0000"; -- input to decode
-         IR_inD : inout STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0) := x"0000"; -- input to decode
-     -- ALU_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0);
-     -- imm   : out std_logic_vector(3 downto 0); -- check???
-      -- status signals from ALU
-       ALUz  : in std_logic; -- alu flags
-        -- add ports as required here
-       -- control signals
-       RFs    : out std_logic_vector(1 downto 0); -- register file selected.
-       Mre, Mwe : out std_logic; -- memory read enable, memory write enable, both RF and Memory=> M 
-       ALUs : out std_logic_vector(1 downto 0); --
-       
-        -- add ports as required here
-      Ms : inout std_logic_vector(1 downto 0);
-      IRLd : inout std_logic;
 
-      RFwa : out std_logic_vector(3 downto 0);-- RFwe is Mwe
-      RFwe : out std_logic;
-      OPR1a : out std_logic_vector(3 downto 0);
-      OPR1e : out std_logic;
-      OPR2a : out std_logic_vector(3 downto 0);
-      OPR2e : out std_logic;
-      IRclr : inout std_logic := '0';
-     -- pc control
-     PCClr : inout std_logic;
-     PCinc : inout std_logic;
-     PCLd : inout std_logic;
-  -- mux4to1
-     PCout : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-     addr_out : out std_logic_vector(DATA_WIDTH - 1 downto 0);
-     alu_addr : in std_logic_vector(DATA_WIDTH - 1 downto 0); --
-     IR_out1 : inout std_logic_vector(DATA_WIDTH - 1 downto 0);
-     IR_for_D_pc : inout std_logic_vector(DATA_WIDTH - 1 downto 0); -- for 
-
-     register_temp : inout std_logic_vector(DATA_WIDTH - 1 downto 0)
-
-    
-
-  ); 
-end Component;
 --------------------------------
 
 

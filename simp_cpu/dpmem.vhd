@@ -33,7 +33,7 @@ end dpmem;
 architecture dpmem_arch of dpmem is
    
   type DATA_ARRAY is array (integer range <>) of std_logic_vector(DATA_WIDTH - 1 downto 0); -- Memory Type
-  signal   M       :     DATA_ARRAY(0 to (2**ADDR_WIDTH) -1) := (others => (others => '0'));  -- Memory model ** equals power
+  signal   M       :     DATA_ARRAY(0 to (30) -1) := (others => (others => '0'));  -- Memory model ** equals power
 -- you can add more code for your ap  m plication by increase the PM_Size
   constant PM_Size : Integer := 2; -- Size of program memory :(range 255 downto 0 )
   --type P_MEM is array (0 to PM_Size-1) of std_logic_vector(DATA_WIDTH -1 downto 0); -- Program Memory is instruction memory
@@ -54,6 +54,7 @@ begin  -- dpmem_arch
     if nReset = '0' then
           Dataout <= (others => '0');
           M(0 to PM_Size-1) <= PM; -- initialize program memory
+          M(2 to 3) <= (x"000A", x"000B");
     elsif (clk'event and clk = '1') then   -- rising clock edge
         if Wen = '1' then
 			   M(conv_integer(addr)+PM_Size)      <= Datain; -- ensure that data cant overwrite on program

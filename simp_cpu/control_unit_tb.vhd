@@ -7,13 +7,13 @@ use work.sys_definition.all;
  
 use std.textio.all;
  
-entity cpu_tb is
+entity control_unit_tb is
 
-end cpu_tb;
+end control_unit_tb;
 
  
  
-architecture behavior of cpu_tb is
+architecture control_unit_tb_behave of control_unit_tb is
 
   signal nReset   :  STD_LOGIC := '1'; -- low active reset signal
     --  start : in STD_LOGIC;    -- high active Start: enable cpu
@@ -65,19 +65,18 @@ architecture behavior of cpu_tb is
      signal  ALUr :  std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";-- port A
      signal gpio_register_array :  register_file_array (15 downto 0) := (others => (others => '0'));
 
-Begin -- begin of architecture
-    dut: cpu port map (
-      nReset, clk, IR_in, IR_inD, ALUz, RFs, Mre, Mwe, Alus, Ms, IRLd, RFwa, 
-      RFwe, OPR1a, OPR1e, OPR2a, OPR2e, IRclr, PCClr, PCinc, PCld, PCout, addr_out, 
-      alu_addr, IR_out1, IR_for_D_pc, register_temp, RFin, OPr1, OPr2, IR_out_for_RF_1, ALUr, gpio_register_array
-    );
+Begin
   -- write your code here
   clk <= not clk after 10 ns; -- T = 20 ns
+  dut1: control_unit 
+    port map (nReset, clk, IR_in, IR_inD, ALUz, RFs, Mre, Mwe, ALUs, Ms, IRLd, RFwa, RFwe,
+              OPr1a, OPR1e, OPR2a, OPR2e, IRclr, PCclr, PCinc, PCLd, PCout, addr_out, alu_addr, IR_out1, IR_out_for_RF_1, register_temp);
+ 
   mypr9: process
   begin
-    PCinc <= '1';
-    wait for 20 ns;
-    PCinc <= '0';
-    wait for 20 ns;
+     PCclr <= '1';
+     wait for 20 ns;
+     
+ 
   end process;
-End behavior;
+End control_unit_tb_behave;

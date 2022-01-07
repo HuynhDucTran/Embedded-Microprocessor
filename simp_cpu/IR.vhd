@@ -9,11 +9,11 @@ use ieee.std_logic_unsigned.all;
 -- program counter with asynchronous PCclr
 entity IR is
      port( 
-          IRclr : in std_logic;
-          IRld : in std_logic;
-          clk : in std_logic;
-          IR_in : in std_logic_vector(DATA_WIDTH - 1 downto 0);
-          IR_out : inout std_logic_vector(DATA_WIDTH - 1 downto 0)
+          IRclr : in std_logic := '0';
+          IRld : in std_logic := '0';
+          clk : in std_logic := '0';
+          IR_in : in std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+          IR_out : buffer std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000"
      ); 
 end IR;
 

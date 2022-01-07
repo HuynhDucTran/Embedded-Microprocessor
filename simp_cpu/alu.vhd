@@ -41,7 +41,7 @@ architecture alu_behave of alu is
                                         result <= OPr1 and OPr2; -- and 
                                 
                                 when others =>
-                                        result <= x"0000";
+                                        null;
                                 
                                 end case;
                                 
