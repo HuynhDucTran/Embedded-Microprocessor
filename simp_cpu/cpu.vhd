@@ -54,7 +54,7 @@ architecture struc of cpu is
      signal   PCout : std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
      signal  addr_out : std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
      signal  alu_addr : std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
-     signal IR_out1 : std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0005";
+     signal IR_out1 : std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
      signal  IR_for_D_pc : std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
 
      signal  register_temp : std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
@@ -101,7 +101,7 @@ dut4: mux4to1
   
 dut8: dpmem
 --port map (clk, nReset, addr_out, Mwe, OPr1, Mre, IR_inD);
-port map (clk, nReset, addr_out, Mwe, OPr1, Mre, Data_out);
+port map (clk, nReset, addr_out, Mwe, OPr1, Mre, IR_inD);
 
 							
     clk <= not clk after 10 ns; -- T = 20 ns

@@ -15,7 +15,7 @@ entity controller is
     	  --  start : in STD_LOGIC;    -- high active Start: enable cpu
          clk   : in STD_LOGIC := '0';    -- Clock
         -- Addr_out : out STD_LOGIC_VECTOR (ADDR_WIDTH-1 downto 0); -- refer to memory.
-	       IR_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0) := x"0009"; -- input to decode
+	       IR_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0) := x"0000"; -- input to decode
 	      -- ALU_in : in STD_LOGIC_VECTOR (DATA_WIDTH-1 downto 0);
         -- imm   : out std_logic_vector(3 downto 0); -- check???
          -- status signals from ALU
@@ -83,7 +83,7 @@ begin -- begin of architecture
       ALUs <= "00";
       --ALUz <= '0'; ??? check again
       --IR_in <= x"0000"; ??????
-      Ms <= "00";
+      Ms <= "01";
       IRLd <= '0';
       PCLd <= '0';
       PCinc <= '0';
@@ -95,7 +95,7 @@ begin -- begin of architecture
     elsif (clk'event and clk = '1') then
       case counter is
 
-        when 2 =>
+        when 4 =>
         case opcode is
           when "0000" => -- move1: RF(Rn) = M(direct) --1: load data from memory to register file
             Ms <= "01"; 
@@ -103,8 +103,9 @@ begin -- begin of architecture
             RFs <= "01";
             RFwa <= IR_in(11 downto 8);
             RFwe <= '1';
-  
-           
+            
+            IRLd <= '1';
+            PCinc <= '1';
            -- state <= fetch;
            counter <= 0;
   
@@ -119,7 +120,8 @@ begin -- begin of architecture
             Mwe <= '1';
   
             PCinc <= '0';
-            IRLd <= '0';
+            IRLd <= '1';
+
             --state <= fetch;
             counter <= 0;
             
@@ -196,25 +198,16 @@ begin -- begin of architecture
         end case;
 
           when 0 => 
-            
-             
-  
-              --state <= decode;
-              counter <= counter + 1;
-           
-
-            when 1 => 
-           
               Ms <= "10";
               Mre <= '1';
               IRLd <= '1';
-              PCinc <= '1';
+              PCinc <= '0';
               PCClr <= '0';
-  
+
               RFs <= "00";
               RFwa <= x"0";
               RFwe <= '0';
-  
+
               OPR1a <= x"0";
               OPR1e <= '0';
               OPR2a <= x"0";
@@ -222,6 +215,27 @@ begin -- begin of architecture
               ALUs <= "00";
               PCLd <= '0';
               Mwe <= '0';
+             
+  
+              --state <= decode;
+              counter <= counter + 1;
+              when 1 => 
+            
+             
+  
+              --state <= decode;
+              counter <= counter + 1;
+              when 2 => 
+            
+             
+  
+              --state <= decode;
+              counter <= counter + 1;
+           
+
+            when 3 => 
+           
+              
   
               --state <= decode;
               counter <= counter + 1;

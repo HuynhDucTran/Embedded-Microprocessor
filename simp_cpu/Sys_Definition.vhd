@@ -335,8 +335,8 @@ Component IR is
         IRclr : in std_logic := '0';
         IRld : in std_logic := '0';
         clk : in std_logic := '0';
-        IR_in : in std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
-        IR_out : buffer std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000"
+        IR_inD : in std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000";
+        IR_in : buffer std_logic_vector(DATA_WIDTH - 1 downto 0) := x"0000"
   ); 
 end Component;
 --------------------------------
